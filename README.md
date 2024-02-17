@@ -8,7 +8,7 @@ The jdbcspy is a lightweight profiling and monitoring proxy for your jdbc connec
 - identify statements that are executed multiple times
 - the stack trace with configurable depth for all listed statements
 - reports statistics for all connections, SQL statements, resultsets
-- reports the size of the resultset
+- reports the size of the resultset  
 - provides an API to retrieve all statistical information
 - list all statements that are currently being executed
 - list all statements that have been executed, but have not been closed
@@ -81,8 +81,7 @@ Try the following code (taken from the junit testclass [DriverTest.minimal()](/l
     c.close();
 
     // dump the statistics gathered by the listeners
-    System.out.println("connection dump:\n"
-        + ConnectionFactory.dumpStatistics());
+    System.out.println("connection dump:\n" + ConnectionFactory.dumpStatistics());
 ```
 
 ## Jdbcspy result

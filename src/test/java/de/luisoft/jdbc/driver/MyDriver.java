@@ -1,4 +1,4 @@
-package de.luisoft.jdbc.testdriver;
+package de.luisoft.jdbc.driver;
 
 import java.sql.Connection;
 import java.sql.Driver;
@@ -13,8 +13,8 @@ public class MyDriver implements Driver {
         try {
             System.out.println("register MyDriver");
             DriverManager.registerDriver(new MyDriver());
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception exError) {
+            exError.printStackTrace();
         }
     }
 
@@ -28,6 +28,7 @@ public class MyDriver implements Driver {
         int rscnt = 100;
         int itertime = 1000;
         int exectime = 1000;
+
         if (url.indexOf("itertime=") > 0) {
             String itertimestr = url.substring(url.indexOf("itertime=") + 9);
             if (itertimestr.indexOf("&") > 0) {
@@ -35,7 +36,6 @@ public class MyDriver implements Driver {
             }
             itertime = Integer.parseInt(itertimestr);
         }
-
         if (url.indexOf("exectime=") > 0) {
             String exectimestr = url.substring(url.indexOf("exectime=") + 9);
             if (exectimestr.indexOf("&") > 0) {
@@ -43,7 +43,6 @@ public class MyDriver implements Driver {
             }
             exectime = Integer.parseInt(exectimestr);
         }
-
         if (url.indexOf("rscnt=") > 0) {
             String rsstr = url.substring(url.indexOf("rscnt=") + 6);
             if (rsstr.indexOf("&") > 0) {
@@ -51,7 +50,6 @@ public class MyDriver implements Driver {
             }
             rscnt = Integer.parseInt(rsstr);
         }
-
         return new MyConnection(rscnt, itertime, exectime);
     }
 

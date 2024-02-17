@@ -1,4 +1,4 @@
-package de.luisoft.jdbc.testdriver;
+package de.luisoft.jdbc.driver;
 
 import java.sql.Array;
 import java.sql.Blob;

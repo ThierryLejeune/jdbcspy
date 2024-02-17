@@ -1,6 +1,6 @@
 package de.luisoft.jdbcspy;
 
-import de.luisoft.jdbc.testdriver.MyConnection;
+import de.luisoft.jdbc.driver.MyConnection;
 import org.junit.After;
 import org.junit.Before;
 
