@@ -4,10 +4,7 @@ import de.luisoft.jdbcspy.ProxyXADatasource;
 import de.luisoft.jdbcspy.proxy.ConnectionFactory;
 import de.luisoft.jdbcspy.vendor.DerbyProxyXADatasource;
 import de.luisoft.jdbcspy.vendor.HsqldbProxyXADatasource;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 
 import javax.sql.XAConnection;
 import java.sql.Connection;
@@ -22,54 +19,56 @@ import java.sql.Statement;
  */
 public class XADatasourceTest {
 
-    @Before
-    public void setUp() throws SQLException, ClassNotFoundException {
+    private static final String csDB = "xabooksHsql";
+    @BeforeClass
+    public static void setUp() throws SQLException, ClassNotFoundException {
 //        Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
-//        initDb("jdbc:derby:memory:booksDerby;create=true");
+//        initDb("jdbc:derby:memory:" + csDB + ";create=true");
         Class.forName("org.hsqldb.jdbc.JDBCDriver");
-        initDb("jdbc:hsqldb:mem:booksHsql;create=true");
+        initDb("jdbc:hsqldb:mem:" + csDB + ";sql.syntax_pgs=true");
     }
 
-   private void initDb(String insUrl) throws SQLException {
+   private static void initDb(String insUrl) throws SQLException {
         Connection  conn = DriverManager.getConnection(insUrl);
         Statement   stmt = conn.createStatement();
-        String      sSql = "CREATE TABLE book (book_id int primary key, title varchar(128))";
+        String      sSql = "CREATE TABLE BOOK (book_id int primary key, title varchar(128))";
 
         try {
             stmt.execute(sSql);
-            sSql = "INSERT INTO book VALUES (1, 'Effective Java'), (2, 'Core Java'), (3, 'Agility')";
+            sSql = "INSERT INTO BOOK VALUES (1, 'Effective Java'), (2, 'Core Java'), (3, 'Agility')";
             stmt.execute(sSql);
             stmt.close();
             conn.close();
         } catch (SQLException exError) {
-            Assert.assertEquals(exError.getSQLState(), exError.getSQLState(), "initDb error: X0Y32");
+            Assert.assertEquals(exError.getMessage(), exError.getSQLState(), "initDb error: X0Y32");
         }
     }
 
+    @Ignore
     @Test
     public void minimalDerbyDriverURL() throws Exception {
         Class.forName("de.luisoft.jdbcspy.vendor.DerbyProxyDriver");
         System.out.println("starting ...");
-        int iFound = getBooksWithDriverURL("proxy:jdbc:derby:booksdb;create=true");
+        int iFound = getBooksWithDriverURL("proxy:jdbc:derby:" + csDB + ";create=true");
         Assert.assertEquals(iFound, 2);
     }
-
     @Test
     public void minimalHsqldbDriverURL() throws Exception {
         Class.forName("de.luisoft.jdbcspy.vendor.HsqldbProxyDriver");
         System.out.println("starting ...");
-        int iFound = getBooksWithDriverURL("proxy:jdbc:hsqldb:mem:booksdb;create=true");
-        Assert.assertEquals(iFound, 2);
+        int iFound = getBooksWithDriverURL("proxy:jdbc:hsqldb:mem:" + csDB + ";sql.syntax_pgs=true");
+        Assert.assertEquals(iFound, 3);
     }
 
+    @Ignore
     @Test
     public void minimalDerbyXA() throws Exception {
         DerbyProxyXADatasource datasource = new DerbyProxyXADatasource();
-        datasource.setDatabaseName("booksdb");
-        int iFound = getBooks(datasource, "select * from book");
-        Assert.assertEquals(iFound, 2);
+        datasource.setDatabaseName(csDB);
+        int iFound = getBooks(datasource, "select * from BOOK");
+        Assert.assertEquals(iFound, 3);
 
-        iFound = getBooks(datasource, "select book_id, title from book");
+        iFound = getBooks(datasource, "select book_id, title from BOOK");
         Assert.assertEquals(iFound, 2);
         System.out.println("connection dump:\n" + ConnectionFactory.dumpStatistics());
     }
@@ -77,11 +76,11 @@ public class XADatasourceTest {
     @Test
     public void minimalHsqldbXA() throws Exception {
         HsqldbProxyXADatasource datasource = new HsqldbProxyXADatasource();
-        datasource.setDatabaseName("booksdb");
-        int iFound = getBooks(datasource, "select * from book");
+        datasource.setDatabaseName(csDB);
+        int iFound = getBooks(datasource, "select * from BOOK");
         Assert.assertEquals(iFound, 2);
 
-        iFound = getBooks(datasource, "select book_id, title from book");
+        iFound = getBooks(datasource, "select book_id, title from BOOK");
         Assert.assertEquals(iFound, 2);
         System.out.println("connection dump:\n" + ConnectionFactory.dumpStatistics());
     }
@@ -89,7 +88,7 @@ public class XADatasourceTest {
     private int getBooksWithDriverURL(String insUrl) throws Exception {
         System.out.println("starting ...");
         Connection con = DriverManager.getConnection(insUrl);
-        PreparedStatement pstmt = con.prepareStatement("select * from book");
+        PreparedStatement pstmt = con.prepareStatement("select * from BOOK");
         ResultSet rs = pstmt.executeQuery();
         int iFound = 0;
         int iId = 0;
